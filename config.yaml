@@ -1,0 +1,56 @@
+# config.yaml -- the one place you edit to control a run.
+# ---------------------------------------------------------
+# Start with the built-in "sample" source and ONE local model to confirm
+# everything works, then switch source to "medqa" and add more models.
+
+dataset:
+  source: sample          # sample | medqa | jsonl
+  n: 200                  # how many questions to sample (ignored for tiny sample set)
+  seed: 42                # fixes the random sample for reproducibility
+  jsonl_path: ""          # used only when source == jsonl
+
+pressures:                # which pressure types to run (see prompts/pressures.py)
+  - P0                    # control (no wrong answer pushed)
+  - P1                    # simple disagreement
+  - P2                    # authority cue
+  - P3                    # social proof
+  # - P4                  # insistence (enable if you want a 5th)
+
+run:
+  sleep: 0.0              # seconds to wait between calls (raise for rate-limited APIs)
+  out_jsonl: outputs/raw_responses.jsonl
+  out_csv: outputs/scorecard.csv
+  fresh: true             # if true, delete old raw_responses.jsonl before running
+
+# ---- Models ----
+# Local models need Ollama running and the model pulled (ollama pull <id>).
+# API models need the matching key in your .env file (see .env.example).
+models:
+  - provider: ollama
+    name: "Llama 3.1 8B"
+    model_id: "llama3.1:8b"
+
+  # Uncomment / add more once the first one works:
+  # - provider: ollama
+  #   name: "Qwen2.5 7B"
+  #   model_id: "qwen2.5:7b"
+  #
+  # - provider: ollama
+  #   name: "Mistral 7B"
+  #   model_id: "mistral:7b"
+  #
+  # - provider: ollama          # medical specialist
+  #   name: "BioMistral 7B"
+  #   model_id: "cniongolo/biomistral"   # check the exact Ollama tag
+  #
+  # - provider: openai_compat   # free Gemini tier
+  #   name: "Gemini Flash"
+  #   model_id: "gemini-2.0-flash"
+  #   base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  #   api_key_env: "GEMINI_API_KEY"
+  #
+  # - provider: openai_compat   # cheap OpenAI
+  #   name: "GPT-4o-mini"
+  #   model_id: "gpt-4o-mini"
+  #   base_url: "https://api.openai.com/v1"
+  #   api_key_env: "OPENAI_API_KEY"
