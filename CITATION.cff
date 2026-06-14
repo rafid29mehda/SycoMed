@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use SycoMed, please cite it using the metadata below."
+title: "SycoMed: a harness for measuring sycophancy in medical language models"
+authors:
+  - name: "The SycoMed Authors"
+version: 1.0.0
+date-released: "2026-01-01"
+license: MIT
+repository-code: "https://github.com/rafid29mehda/SycoMed"
+url: "https://github.com/rafid29mehda/SycoMed"
+keywords:
+  - sycophancy
+  - medical language models
+  - LLM evaluation
+  - trustworthy AI
+  - robustness
