@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sycomed"
+version = "1.0.0"
+description = "A model-agnostic harness for measuring sycophancy in medical language models."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "The SycoMed Authors" }]
+keywords = ["sycophancy", "medical-ai", "llm-evaluation", "trustworthy-ai", "robustness"]
+dependencies = [
+    "requests>=2.31",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "datasets>=2.14",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools]
+# The harness is run from source with `python run.py`; these packages are
+# exposed so it can also be installed for development with `pip install -e .`.
+packages = ["core", "data", "models", "prompts"]
