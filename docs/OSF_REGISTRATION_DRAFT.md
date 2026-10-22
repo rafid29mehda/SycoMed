@@ -1,5 +1,7 @@
 # OSF registration text: SycoMed held-out run
 
+_Filed as https://osf.io/7e4af/ on 2026-10-22 at 15:21 UTC (during data collection)._
+
 **Status of this registration: filed DURING data collection and BEFORE any analysis.
 It is not a pre-registration.** The held-out run began at about 11:57 UTC on 2026-10-22,
 before any registration was filed. Use the OSF template "Preregistration for Studies with

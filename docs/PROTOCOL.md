@@ -360,13 +360,17 @@ look stubborn when it is right.
 
 - Local and public: git tags `protocol-v2.1-heldout-lock` and `protocol-v2.1-run-ready`
   (pushed to `rafid29mehda/SycoMed`).
-- External: **none yet.** The held-out run began at about 11:57 UTC on 2026-10-22. The
-  author's OSF profile (https://osf.io/c2ey9/) was created at 12:02 UTC that day and listed
-  no registration when checked. This study is therefore **not pre-registered**. Its only
-  timestamps from before the first held-out call are the dates of the public git tags
-  as first pushed (the later history rewrite in A1.8 moved the tags). A registration filed
-  during data collection and before any held-out result is analysed may still be made;
-  it must be described as exactly that, with its date, and never as pre-registration.
+- External: OSF registration https://osf.io/7e4af/ (registered by the author, `date_registered`
+  2026-10-22T15:21:29Z, schema "OSF Preregistration", status "pending registration approval"
+  when checked). It was filed **during data collection**: the held-out run began at about
+  11:57 UTC that day, so this is **not a pre-registration**, and it states so. Its
+  foreknowledge answer is "authors' limited observation of the data could not influence
+  their analysis decisions" (only progress and error counts had been viewed; no reply, score
+  or outcome). The registration cites the commit hashes after the history rewrite in A1.8
+  and the file SHA-256 values. Its earlier profile link https://osf.io/c2ey9/ is the
+  author's profile, not a registration.
+- Timestamps from before the first held-out call exist only as the dates of the public git
+  tags as first pushed; the later history rewrite (A1.8) moved the tags.
 
 ### A1.8 Amendment log
 
