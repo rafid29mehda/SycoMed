@@ -16,9 +16,10 @@ Anything added after seeing data is labelled *exploratory* in the write-up.
 When a user challenges a medical LLM's answer, does the model respond to the
 *truth of the claim* or merely to the *social force of the challenge*?
 
-Prior work measures how often models give in (see Related work). A model that
-never gives in is not safe either: it should *update* when the user is right.
-SycoMed therefore measures both, with matched wording, and reports their
+Most medical sycophancy work measures how often models give in; two-sided scores
+exist for general-domain questions (see Related work). A model that never gives in
+is not safe either: it should *update* when the user is right. SycoMed therefore
+measures both, with matched wording, on clinical-vignette items, and reports their
 difference.
 
 ## Design
@@ -178,15 +179,82 @@ Both keep the `FINAL ANSWER: X` instruction unchanged.
   include unstable questions. They are kept as pilots; headline numbers come from
   runs with `baseline_samples: 3`.
 
-## Related work (to position the contribution)
+## Related work and positioning
 
-Sharma et al. 2023 (origin and RLHF link); Fanous et al. 2025 (SycEval:
-progressive vs regressive sycophancy); Chen et al. 2025 (npj Digital Medicine:
-illogical drug requests); Ping et al. 2026 (conversational factors, 1.2M trials);
-Peng et al. 2026 (SycoEval-EM); Hong et al. 2025 (SYCON-Bench, multi-turn);
-Yuan et al. 2025 (EchoBench, vision-language). SycoMed's additions: matched
-valid/invalid challenges scored as discrimination, wording-controlled pressure,
-and a pre-specified mitigation comparison.
+Last checked 2026-10-22 (arXiv, ACL Anthology, PubMed). **†** = read beyond the abstract
+(full text or HTML); the rest were checked at abstract level only. The search was not
+exhaustive. Several papers below appeared after this protocol's first draft.
+
+**Measuring giving-in.** Sharma et al. 2023 (origin; link to RLHF); Laban et al. 2023
+(FlipFlop); Fanous et al. 2025 (SycEval: progressive vs regressive shifts, MedQuAD and
+mathematics, preemptive vs in-context rebuttals); Chen et al. 2025 (npj Digital Medicine:
+illogical drug requests); Ping et al. 2026† (conversational factors, MedQuAD, five open
+models, about 1.2M trials, mixed-effects models, false claims only); Peng et al. 2026
+(SycoEval-EM, simulated emergency encounters); Christophe et al. 2026 (MedQA, basic and
+expert nudges); Joy and Farhan 2026† (MedPRESS: 600 scripted five-turn patient-pressure
+dialogues, 20 models, LLM judge validated on 100 conversations, every case built around an
+unsafe belief, so it measures resistance only); Hong et al. 2025 (SYCON-Bench, multi-turn);
+Tang et al. 2026 (SPINE: an adaptive proxy user pushes up to 25 turns; collapse rises with
+length and scripted pressure understates it; false-presupposition and unethical queries,
+not medicine); Yuan et al. 2025 (EchoBench, vision-language).
+
+**Two-sided measures (the closest work).**
+- Sinha 2026† (SycoBench-600, ACL Findings): 600 synthetic general-domain four-option
+  questions; doubt, authority and wrong-suggestion pressure plus a matched
+  correct-suggestion condition, three fixed wordings; seven assistants; *correction
+  selectivity* = Update − WrongFlip with cluster-bootstrap intervals. One baseline answer
+  per question, unparseable replies scored as incorrect, no claim-free control, no
+  medical items. **SycoMed's J is the same statistic.**
+- Nee et al. 2026† (Wavering Oracles): selectivity on SycoBench-600 logs for seven
+  published models plus three small local ones.
+- Zhang et al. 2026† (NeurIPS workshop): frozen system-prompt interventions scored on
+  Update and WrongFlip separately on SycoBench-600 (Phi, Llama, Mistral); no prompt
+  improves selectivity on all three, and one cut wrong flips by 53.7 points at a cost
+  of 46.0 points of updating. **The H4 trade-off is already shown in the general domain.**
+- Ma et al. 2026† (EMNLP Findings): *unsupported yielding* vs *rational updating*;
+  TruthfulQA, PopQA, EX-FEVER, AQuA; four open models; valid pushback carries real
+  evidence; anti-sycophancy training and steering often trade one for the other.
+- Ballon et al. 2026† (Big-Big-SycoBench): valid vs invalid arguments matched in
+  register, on evaluative writing tasks with no ground truth; no medical domain, no
+  no-argument control.
+- Huang 2026† (SycoLens): effects measured against a matched control with the pushback
+  line removed; truth effect on arithmetic and moral vignettes; no medical domain.
+
+**Construct.** Ye et al. 2026† (taxonomy and expert survey) argue that benchmarks labelled
+"sycophancy" target different behaviours and can rank models differently. SycoMed
+measures one cell: *explicit, position-directed, verifiable* (adopting the letter a user
+claims). It does not measure flattery, empathy, implicit deference or conversational
+repair, and its model rankings are not claimed to transfer to benchmarks of those cells.
+
+### What is not claimed as new
+
+Two-sided scoring of pushback; the difference statistic (it is Youden's index, and the
+same quantity as selectivity); that suppressing yielding can suppress updating; that
+pressure types and wordings differ; that a system prompt can trade one error for the
+other. These are established, mostly in general-domain questions, and are cited as such.
+
+### What SycoMed adds (to be shown by the held-out run, not assumed)
+
+1. **Domain.** Real clinical-vignette items (MedQA-USMLE) instead of synthetic or
+   general-knowledge questions. As far as the search above went, the two-sided medical
+   evidence is SycEval's MedQuAD progressive/regressive split; the medical benchmarks above
+   are one-sided. To our knowledge there is no published matched-wording two-sided study on
+   clinical-vignette items. This is a domain-specific extension, not a new paradigm.
+2. **Controls on how the arms are formed.** Arms from three baseline samples (stable
+   knowledge) rather than one; a claim-free recheck (P0) and a recheck-adjusted J, because
+   a model that knows the answer corrects itself without any claim; strict never-guess
+   parsing with errors excluded; the tempting distractor chosen by an independent
+   annotator rather than an arbitrary wrong option.
+3. **Richer pressure.** Social proof, fabricated evidence and *reasoned* claims with
+   length-matched correct and flawed rationales, in follow-up, preemptive and prefilled
+   structures, including the finding that the planted-answer design mostly measures
+   self-correction (pilot result, to be confirmed on the held-out set).
+4. **An item-quality audit** of the valid arm, which is enriched for flawed MedQA items
+   (A1.5).
+5. **Pre-specified, locked, held-out confirmation** with a dated amendment (Amendment 1).
+6. **Per-model prompt mitigations** scored in both directions on medical items.
+
+The pilot headline numbers (Studies 1-3) are exploratory and are not part of this claim.
 
 ---
 
@@ -301,3 +369,4 @@ look stubborn when it is right.
 |------|--------|--------|-----------------------------------|
 | 2026-10-22 | Amendment 1: held-out run lock, primary/secondary designation, item-quality sensitivity analysis, run discipline | Separate confirmatory from pilot evidence; address MedQA label noise | Yes |
 | 2026-10-22 | Clarification of A1.5(a): "valid arm" means the follow-up/preemptive valid arm; review sheet tool `data/review_sheet.py` added. No change to the run, config or analysis code | The wording was ambiguous about the prefilled valid arm, which contains nearly every known question | Yes |
+| 2026-10-22 | Related work and novelty statement rewritten (adds SycoBench-600, Ma et al., MedPRESS, SPINE and others; removes the claim that earlier work measured only giving-in). No change to the design, run, config or analysis code | Earlier text overstated novelty | Yes |
