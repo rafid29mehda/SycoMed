@@ -1,0 +1,73 @@
+# OSF registration draft: SycoMed held-out run
+
+Paste into an OSF "Open-Ended Registration" (or AsPredicted) **before** running
+`python run.py --config configs/heldout.yaml`. Fill the two `<...>` fields after pushing
+the tags. Nothing here adds to the protocol: it points at it.
+
+**Title.** Do medical LLMs respond to the truth of a challenge or to its social force?
+A locked held-out test on MedQA-USMLE (SycoMed).
+
+**Description.** When a user challenges a model's answer to a medical exam question,
+does the model adopt the claim because it is true, or because of how it is pressed? We
+challenge each model with matched wording in two arms: a wrong claim against an answer it
+reliably gets right (capitulation) and the correct claim against an answer it reliably
+gets wrong (update). Discrimination J = update − capitulation. J has been used as
+"correction selectivity" in general-domain questions (SycoBench-600); this study applies
+it to clinical-vignette items with extra controls. Full design: `docs/PROTOCOL.md` and
+Amendment 1.
+
+**Pre-specified artefacts (immutable git tags, repository `rafid29mehda/SycoMed`).**
+- Protocol, harness and pilots: tag `protocol-v2.0-pilot-baseline`
+- Amendment 1 and run configuration: tag `protocol-v2.1-heldout-lock` (commit `d867e25`)
+- Held-out stimulus annotations: tag `protocol-v2.1-annotations` (commit `81b6be0`);
+  `data/annotations/heldout.jsonl` SHA-256
+  `ebb23c520ce20c538daae2a3d5e3e8a7a3f8a0c2d0de876e623c20282ade0dca`
+- `configs/heldout.yaml` SHA-256
+  `f661d96303a5a4cedcd3bf2642543347499a1ce12cf6a020fb1cbdd8fe7eda49`
+- Run-ready tag (adds this file, the review-sheet tool and the revised related work; no
+  change to config, prompts, models, runner, scorer, report or statistics code since the
+  lock): `<tag, e.g. protocol-v2.1-run-ready>`
+- URL: `<GitHub link to the tag>`
+
+**Data.** MedQA-USMLE 4-option test split (`GBaker/MedQA-USMLE-4-options`), seeded shuffle
+(seed 42), the 673 questions after the first 600. No held-out question had been sent to
+any model at registration. The first 600 were used in exploratory pilots, which the
+authors have read.
+
+**Models.** GPT-4.1-nano, GPT-4o-mini, GPT-5-mini (minimal reasoning), each under the
+default prompt and two pre-specified system prompts (`evidence_first`, `resolve_first`).
+Temperature 0 where supported. Served snapshot ids are recorded in `run_meta.json`.
+
+**Design.** Three baseline answers per question; a question enters the invalid arm if all
+are correct and the valid arm if all are wrong (others excluded and counted). Pressures:
+P0 recheck without a claim, P1 plain, P2 authority, P3 social proof, P5 fabricated
+evidence, P6 reasoned claim with matched rationales. Structures: follow-up (primary),
+preemptive, prefilled (secondary). Three fixed wordings per pressure and structure.
+
+**Hypotheses (confirmatory, per model).** H1: capitulation under P2 and P3 exceeds P1.
+H2: capitulation differs between follow-up and preemptive claims. H4: each mitigation
+prompt lowers capitulation relative to the default, with the cost on update and J
+reported. H6: a reasoned claim (P6) changes behaviour relative to the bare claim (P1).
+H5 (prefilled, paired) is confirmatory but secondary. H3 (J versus baseline accuracy
+across models) is descriptive. Everything else is exploratory and labelled so.
+
+**Primary outcome.** Follow-up J per model and pressure with Newcombe 95% intervals,
+reported with J adjusted for recheck. A model with fewer than 20 valid-arm questions has
+update and J reported as descriptive only.
+
+**Analysis.** Wilson intervals for proportions; exact McNemar tests on questions both
+conditions answered without error; Holm correction within each hypothesis. Errors,
+unparseable replies and unstable baselines are reported with counts and never imputed.
+Item-quality sensitivity analysis (Amendment 1, A1.5): a blind physician review of the
+valid-arm items and random samples; the primary analysis keeps all items, a secondary
+analysis excludes flagged items.
+
+**Run discipline.** One confirmatory run. No change to the configuration or to
+`core/scorer.py`, `core/report.py`, `core/stats.py` after the first held-out call; after
+an abort the same command is repeated with resume. Deviations are logged in the
+Amendment log (A1.8) and results from changed code are labelled.
+
+**Known limits.** Multiple choice, one exam domain, English; valid-arm claims carry no
+argument except under P6; the annotator (gpt-5-mini) shares a vendor with the evaluated
+models; three models from one vendor; the physician review may not be finished before the
+run.
