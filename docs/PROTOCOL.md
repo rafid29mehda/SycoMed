@@ -4,6 +4,13 @@ This file fixes the research question, hypotheses, measures and analysis plan
 **before** the main runs, so the results cannot quietly steer the analysis.
 Anything added after seeing data is labelled *exploratory* in the write-up.
 
+> **Status (2026-10-22).** Parts of this protocol were written or refined after the
+> pilot Studies 1-3 (see Amendment 1, section A1.1). The confirmatory run is the
+> **held-out run** defined in [Amendment 1](#amendment-1-2026-10-22-held-out-run-lock)
+> at the end of this file. Where the amendment and the text below disagree, the
+> amendment governs. The version history is in git (tag `protocol-v2.0-pilot-baseline`
+> is this file before the amendment).
+
 ## Research question
 
 When a user challenges a medical LLM's answer, does the model respond to the
@@ -149,7 +156,8 @@ Both keep the `FINAL ANSWER: X` instruction unchanged.
   the model got wrong, so it is small for accurate models. Report its size; do
   not interpret Update there for models with fewer than 20 valid-arm questions.
   The prefilled structure is the primary design for discrimination (H5) for
-  exactly this reason.
+  exactly this reason. *[Superseded by Amendment 1, A1.3: follow-up is primary,
+  prefilled is secondary.]*
 
 ## Known limits (stated up front)
 
@@ -161,7 +169,8 @@ Both keep the `FINAL ANSWER: X` instruction unchanged.
   lower capitulation than the natural follow-up (which replays the model's own
   reasoning) for the most sycophantic model, so prefilled is a conservative proxy
   for follow-up capitulation. Primary capitulation claims use follow-up; prefilled
-  is used for paired discrimination (H5).
+  is used for paired discrimination (H5). *[Amended: A1.3 makes prefilled
+  secondary for discrimination too, because of the P0 self-correction rate.]*
 - Model versions change; every run saves the raw replies, the exact questions, and
   `run_meta.json` (git commit, package versions, config, question-id hash, and the
   dated model snapshot the API reports having served).
@@ -178,3 +187,110 @@ Peng et al. 2026 (SycoEval-EM); Hong et al. 2025 (SYCON-Bench, multi-turn);
 Yuan et al. 2025 (EchoBench, vision-language). SycoMed's additions: matched
 valid/invalid challenges scored as discrimination, wording-controlled pressure,
 and a pre-specified mitigation comparison.
+
+---
+
+## Amendment 1 (2026-10-22): held-out run lock
+
+Written **before any held-out question has been sent to any model**, and before the
+held-out annotations exist. It fixes what the confirmatory run is and how it will be
+read. It is timestamped by the git tag `protocol-v2.1-heldout-lock` (a signed
+timestamp from a registry is added in A1.7).
+
+### A1.1 What had been seen before this amendment
+
+- **Pilot Studies 1-3** (`outputs/study*`) used the first 600 shuffled MedQA test
+  questions (seed 42) with a **single** baseline sample per question. Their results
+  are exploratory, and the author has read them.
+- The **development set** (first 100 shuffled questions, `outputs/dev`) was used to
+  finish and debug the tool with one cheap model.
+- The following were **added or changed after seeing pilot data**: the control-adjusted
+  discrimination (J adjusted for recheck), the prefilled structure's demotion (A1.3),
+  hypotheses H5 and H6, and the k = 3 baseline rule. They are therefore not
+  confirmatory on the first 600 questions. Only the held-out run can confirm them.
+- **Not yet done:** any run on the held-out questions (`skip: 600`); the held-out
+  annotations; any physician review (the dev review sheet has 0 of 100 rows filled).
+
+### A1.2 The confirmatory run
+
+Defined by `configs/heldout.yaml`, frozen at the lock tag.
+
+- **Questions:** all 673 MedQA-USMLE (4-option) test questions remaining after
+  `skip: 600`, seed 42. Disjoint from the pilots and the dev set.
+- **Models and conditions:** GPT-4.1-nano, GPT-4o-mini and GPT-5-mini (minimal
+  reasoning), each under `default`, `evidence_first` and `resolve_first`: 9 setups.
+  Gemini and Groq models are excluded (free-tier daily caps make complete runs
+  impossible). No Claude or open-weight model is included yet; adding one later
+  requires its own dated entry in the log below **before** its run, and its results
+  are then reported as a pre-specified extension.
+- **Design:** the Design section above, unchanged: pressures P0, P1, P2, P3, P5, P6
+  (P4 not run), structures follow-up, preemptive and prefilled, 3 wordings each,
+  `baseline_samples: 3`, strict parsing, temperature 0.
+- **Annotator:** `gpt-5-mini` (stated limitation: same vendor as the evaluated models).
+- **Upper bound:** 26 calls per question, 157,482 calls in total.
+
+### A1.3 Primary and secondary readings
+
+- **Headline discrimination** is J from the **follow-up** structure, per model and
+  pressure, with Newcombe intervals. J adjusted for recheck is reported next to it.
+  The follow-up valid arm is only the questions a model is stably wrong on, so the
+  rule in "Analysis plan" applies: a model with fewer than **20** valid-arm questions
+  has its Update and J reported as descriptive only.
+- **Prefilled is secondary.** In the pilots a plain "are you sure?" with no claim (P0)
+  made models correct a planted wrong answer 78-96% of the time, so raw Update in the
+  prefilled valid arm mostly measures self-correction. H5 is still tested, and
+  labelled "secondary: knowledge-controlled".
+- **Preemptive** is used for H2 only.
+
+### A1.4 Confirmatory and exploratory
+
+- **Confirmatory (on the held-out set):** H1, H2, H4 and H6, per model, from the
+  follow-up and preemptive structures, Holm-corrected within each hypothesis as in
+  "Analysis plan". H5 is confirmatory but secondary (A1.3).
+- **Descriptive:** H3 (n = number of models, so a rank correlation only).
+- **Exploratory, labelled as such in any write-up:** every other subgroup, model
+  comparison, wording analysis, error analysis, and anything decided after the first
+  held-out result is seen.
+
+### A1.5 Item-quality sensitivity analysis (pre-specified, secondary)
+
+MedQA contains flawed items (missing figures, ambiguous or disputed keys). The valid
+arm is built from questions a model is **stably wrong** on, so it is enriched for
+such items, and a model that resists a "correct" claim that is actually wrong would
+look stubborn when it is right.
+
+- The **primary analysis includes all items**.
+- A physician, blind to model outputs, reviews (a) every question that enters a
+  valid arm for any evaluated setup, (b) a random sample of 100 other questions, and
+  (c) a random sample of 100 held-out annotations for the accuracy of the correct
+  rationale and the plausibility and flaw of the wrong one. The review sheet shows
+  question, options, key and annotations only.
+- The **sensitivity analysis** repeats the confirmatory tests excluding items flagged
+  as unanswerable, disputed-key or inaccurate-rationale, and reports reviewer
+  agreement if more than one reviewer is available. If the review is not done, the
+  write-up says the sensitivity analysis was not done.
+
+### A1.6 Run discipline
+
+- **One confirmatory run.** After the first held-out API call, `configs/heldout.yaml`
+  and the analysis code (`core/scorer.py`, `core/report.py`, `core/stats.py`) are not
+  changed. After an abort or quota hit, the same command is repeated; `resume`
+  redoes only failed or missing questions.
+- **Everything is reported:** errors, unparseable replies, unstable baselines and
+  abandoned setups, with counts. Nothing is guessed or imputed.
+- Any bug fix that must change code or config after the lock is added to the log
+  below with the reason, and results from the changed code are labelled so.
+
+### A1.7 Timestamp and registration
+
+- Local: git tag `protocol-v2.1-heldout-lock`.
+- External: push the tag to the public repository, and register this amendment and
+  `configs/heldout.yaml` before the run. Registry and identifier: **pending**
+  (to be filled in by the author before the run; do not call the study
+  "pre-registered" in any text until this line is filled).
+
+### A1.8 Amendment log
+
+| Date | Change | Reason | Made before seeing held-out data? |
+|------|--------|--------|-----------------------------------|
+| 2026-10-22 | Amendment 1: held-out run lock, primary/secondary designation, item-quality sensitivity analysis, run discipline | Separate confirmatory from pilot evidence; address MedQA label noise | Yes |

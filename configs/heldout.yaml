@@ -1,0 +1,63 @@
+# configs/heldout.yaml -- the held-out evaluation run of docs/PROTOCOL.md (Amendment 1).
+#
+# LOCKED. Do not edit after the first held-out API call. The tag
+# `protocol-v2.1-heldout-lock` marks the commit that fixes this file; every run
+# records the git commit and this config in run_meta.json. A change after the lock
+# is a deviation and must be listed in the PROTOCOL.md amendment log.
+#
+# Order of operations:
+#   1. python -m data.annotate --config configs/heldout.yaml        (generator, ~673 calls)
+#   2. physician reviews data/annotations/heldout_review.csv        (item-quality flags)
+#   3. python run.py --config configs/heldout.yaml --dry-run        (cost upper bound)
+#   4. python run.py --config configs/heldout.yaml                  (the run)
+# After an abort or quota hit, re-run step 4 unchanged: `resume: true` keeps finished,
+# error-free questions and redoes the rest. `fresh` is off so replies are never deleted.
+
+dataset:
+  source: medqa
+  n: 0                    # all remaining questions after `skip` (673 of the 1273 test items)
+  seed: 42
+  skip: 600               # Studies 1-3 used the first 600 shuffled questions; the dev set
+                          # is the first 100 of those. This set is disjoint from both.
+  annotations: data/annotations/heldout.jsonl
+
+pressures: [P0, P1, P2, P3, P5, P6]     # P4 (insistence) is not run
+
+run:
+  sleep: 0.0
+  out_jsonl: outputs/heldout/raw_responses.jsonl
+  out_csv: outputs/heldout/scorecard.csv
+  fresh: false
+  resume: true
+  structures: [followup, preemptive, prefilled]
+  baseline_samples: 3
+  workers: 8
+  strict_parse: true
+
+# Independent generator of tempting wrong options and matched rationales (never one of
+# the evaluated models' own errors). Same vendor as the evaluated models: stated limitation.
+annotate:
+  provider: openai_compat
+  name: "annotator (gpt-5-mini)"
+  model_id: gpt-5-mini
+  base_url: "https://api.openai.com/v1"
+  api_key_env: OPENAI_API_KEY
+  max_tokens: 4096
+  workers: 8
+
+# Three models x three prompt conditions (H4 compares each mitigation with the same
+# model's default). Gemini and Groq free tiers hit daily caps and are excluded.
+# A model added later (e.g. a Claude or open-weight model) needs its own amendment
+# entry dated BEFORE its run.
+models:
+  - {provider: openai_compat, name: "GPT-4.1-nano", model_id: "gpt-4.1-nano", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY}
+  - {provider: openai_compat, name: "GPT-4.1-nano [evidence_first]", model_id: "gpt-4.1-nano", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY, system_variant: evidence_first}
+  - {provider: openai_compat, name: "GPT-4.1-nano [resolve_first]", model_id: "gpt-4.1-nano", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY, system_variant: resolve_first}
+
+  - {provider: openai_compat, name: "GPT-4o-mini", model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY}
+  - {provider: openai_compat, name: "GPT-4o-mini [evidence_first]", model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY, system_variant: evidence_first}
+  - {provider: openai_compat, name: "GPT-4o-mini [resolve_first]", model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY, system_variant: resolve_first}
+
+  - {provider: openai_compat, name: "GPT-5-mini", model_id: "gpt-5-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY, max_tokens: 2048, extra_params: {reasoning_effort: minimal}}
+  - {provider: openai_compat, name: "GPT-5-mini [evidence_first]", model_id: "gpt-5-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY, max_tokens: 2048, extra_params: {reasoning_effort: minimal}, system_variant: evidence_first}
+  - {provider: openai_compat, name: "GPT-5-mini [resolve_first]", model_id: "gpt-5-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY, max_tokens: 2048, extra_params: {reasoning_effort: minimal}, system_variant: resolve_first}
