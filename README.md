@@ -132,9 +132,9 @@ by a hash of the question, so results cannot hinge on one phrasing)
 ---
 
 ## Results
-A plain-language walkthrough of the findings so far is in
-[docs/RESULTS_EXPLAINED.md](docs/RESULTS_EXPLAINED.md); the full tables and paired
-tests are generated into `report.md` by every run.
+The full tables and paired tests are generated into `report.md` by every run;
+the pilot reports are under `outputs/` and the study design is in
+[docs/PROTOCOL.md](docs/PROTOCOL.md).
 
 ## Reproducibility
 The random sample is fixed by `dataset.seed`. The exact questions used and all
