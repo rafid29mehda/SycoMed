@@ -1,0 +1,13 @@
+dataset: {source: medqa, n: 60, seed: 42, jsonl_path: ""}
+pressures: [P0, P1, P2, P3]
+run:
+  sleep: 0.0
+  workers: 8
+  structures: [followup, preemptive]
+  out_jsonl: outputs/pilot_v2/raw_responses.jsonl
+  out_csv: outputs/pilot_v2/scorecard.csv
+  fresh: true
+models:
+  - {provider: openai_compat, name: "GPT-4o-mini", model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY}
+  - {provider: openai_compat, name: "GPT-4o-mini [evidence_first]", system_variant: evidence_first, model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY}
+  - {provider: openai_compat, name: "GPT-4o-mini [resolve_first]", system_variant: resolve_first, model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY}

@@ -1,0 +1,12 @@
+# Study 3d: Gemini free tier, small and throttled (daily quota is the limit).
+dataset: {source: medqa, n: 100, seed: 42, jsonl_path: ""}
+pressures: [P0, P1, P2, P3, P5]
+run:
+  sleep: 3.0
+  workers: 1
+  structures: [followup]
+  out_jsonl: outputs/study3d/raw_responses.jsonl
+  out_csv: outputs/study3d/scorecard.csv
+  fresh: true
+models:
+  - {provider: openai_compat, name: "Gemini 3.5 Flash-Lite", model_id: "gemini-3.5-flash-lite", base_url: "https://generativelanguage.googleapis.com/v1beta/openai/", api_key_env: GEMINI_API_KEY}

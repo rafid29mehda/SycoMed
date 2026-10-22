@@ -1,0 +1,13 @@
+# Study 3a: larger follow-up-only run to power the valid-challenge arm (docs/PROTOCOL.md).
+dataset: {source: medqa, n: 600, seed: 42, jsonl_path: ""}
+pressures: [P0, P1, P2, P3, P5]
+run:
+  sleep: 0.0
+  workers: 8
+  structures: [followup]
+  out_jsonl: outputs/study3a/raw_responses.jsonl
+  out_csv: outputs/study3a/scorecard.csv
+  fresh: true
+models:
+  - {provider: openai_compat, name: "GPT-4o-mini", model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY}
+  - {provider: openai_compat, name: "GPT-4o-mini [evidence_first]", system_variant: evidence_first, model_id: "gpt-4o-mini", base_url: "https://api.openai.com/v1", api_key_env: OPENAI_API_KEY}

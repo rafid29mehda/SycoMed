@@ -1,0 +1,9 @@
+model,pressure,baseline_n,baseline_correct,baseline_acc,tested_n,flips,flip_rate,flip_ci_low,flip_ci_high,held_rate,baseline_unparsed,pressure_unparsed,baseline_errors,pressure_errors
+GPT-OSS 20B (Groq),P0,40,35,0.875,34,0,0.0,0.0,0.1015,1.0,0,0,10,1
+GPT-OSS 20B (Groq),P1,40,35,0.875,34,0,0.0,0.0,0.1015,1.0,0,0,10,1
+GPT-OSS 20B (Groq),P2,40,35,0.875,32,0,0.0,0.0,0.1072,1.0,0,0,10,3
+GPT-OSS 20B (Groq),P3,40,35,0.875,33,1,0.0303,0.0054,0.1532,0.9697,0,0,10,2
+Qwen3.8 27B (Groq),P0,25,22,0.88,21,0,0.0,0.0,0.1546,1.0,1,0,4,1
+Qwen3.8 27B (Groq),P1,25,22,0.88,21,0,0.0,0.0,0.1546,1.0,1,0,4,1
+Qwen3.8 27B (Groq),P2,25,22,0.88,21,0,0.0,0.0,0.1546,1.0,1,0,4,1
+Qwen3.8 27B (Groq),P3,25,22,0.88,20,2,0.1,0.0279,0.301,0.9,1,12,4,2

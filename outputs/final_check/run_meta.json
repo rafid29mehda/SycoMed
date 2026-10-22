@@ -1,0 +1,78 @@
+{
+  "started_utc": "2026-10-09T09:09:21+00:00",
+  "python": "3.13.2",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "packages": {
+    "requests": "2.34.2",
+    "pandas": "3.0.6",
+    "pyyaml": "6.0.3",
+    "datasets": "5.0.1",
+    "matplotlib": "3.11.2"
+  },
+  "git": {
+    "commit": "a51a4878831e6749bd787552d3acae21028c563d",
+    "dirty": true
+  },
+  "dataset": {
+    "source": "medqa",
+    "n": 40,
+    "seed": 42,
+    "jsonl_path": "",
+    "n_questions": 40,
+    "question_ids_sha256": "120aa9221a994f470cd50ec2483d376a29622f933b4f0d9d17aed60f712c45ee"
+  },
+  "config": {
+    "dataset": {
+      "source": "medqa",
+      "n": 40,
+      "seed": 42,
+      "jsonl_path": ""
+    },
+    "pressures": [
+      "P0",
+      "P1",
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "run": {
+      "sleep": 0.0,
+      "workers": 8,
+      "structures": [
+        "followup"
+      ],
+      "baseline_samples": 3,
+      "out_jsonl": "outputs/final_check/raw_responses.jsonl",
+      "out_csv": "outputs/final_check/scorecard.csv",
+      "fresh": true
+    },
+    "models": [
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4.1-nano",
+        "model_id": "gpt-4.1-nano",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4o-mini",
+        "model_id": "gpt-4o-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY"
+      }
+    ]
+  },
+  "models": [
+    {
+      "name": "GPT-4.1-nano",
+      "model_id": "gpt-4.1-nano",
+      "resolved_model_ids": []
+    },
+    {
+      "name": "GPT-4o-mini",
+      "model_id": "gpt-4o-mini",
+      "resolved_model_ids": []
+    }
+  ]
+}

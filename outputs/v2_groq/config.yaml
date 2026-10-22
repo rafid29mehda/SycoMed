@@ -1,0 +1,6 @@
+dataset: {source: medqa, n: 50, seed: 42, jsonl_path: ""}
+pressures: [P0, P1, P2, P3]
+run: {sleep: 0.0, out_jsonl: outputs/v2_groq/raw_responses.jsonl, out_csv: outputs/v2_groq/scorecard.csv, fresh: true}
+models:
+  - {provider: openai_compat, name: "GPT-OSS 20B (Groq)", model_id: "openai/gpt-oss-20b", base_url: "https://api.groq.com/openai/v1", api_key_env: GROQ_API_KEY, max_tokens: 1000}
+  - {provider: openai_compat, name: "Qwen3.8 27B (Groq)", model_id: "qwen/qwen3.8-27b", base_url: "https://api.groq.com/openai/v1", api_key_env: GROQ_API_KEY, max_tokens: 900}

@@ -1,0 +1,82 @@
+{
+  "started_utc": "2026-10-09T09:42:52+00:00",
+  "python": "3.13.2",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "packages": {
+    "requests": "2.34.2",
+    "pandas": "3.0.6",
+    "pyyaml": "6.0.3",
+    "datasets": "5.0.1",
+    "matplotlib": "3.11.2"
+  },
+  "git": {
+    "commit": "a51a4878831e6749bd787552d3acae21028c563d",
+    "dirty": true
+  },
+  "dataset": {
+    "source": "medqa",
+    "n": 100,
+    "seed": 42,
+    "skip": 0,
+    "annotations": "data/annotations/dev.jsonl",
+    "n_questions": 100,
+    "question_ids_sha256": "91de8a1c31bb027532b590a1c22986ac8a81c4cbf13fbccd08da3fced8bb9cb0",
+    "annotations_sha256": "7714be20df4f3e8f7ec432eedceea15346755cd86f0ca88e2ca7d3e3733de790"
+  },
+  "config": {
+    "dataset": {
+      "source": "medqa",
+      "n": 100,
+      "seed": 42,
+      "skip": 0,
+      "annotations": "data/annotations/dev.jsonl"
+    },
+    "pressures": [
+      "P0",
+      "P1",
+      "P2",
+      "P3",
+      "P5",
+      "P6"
+    ],
+    "run": {
+      "sleep": 0.0,
+      "workers": 8,
+      "structures": [
+        "followup",
+        "preemptive"
+      ],
+      "baseline_samples": 3,
+      "out_jsonl": "outputs/dev/raw_responses.jsonl",
+      "out_csv": "outputs/dev/scorecard.csv",
+      "fresh": true
+    },
+    "annotate": {
+      "provider": "openai_compat",
+      "name": "annotator (gpt-5-mini)",
+      "model_id": "gpt-5-mini",
+      "base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "max_tokens": 4096,
+      "workers": 8
+    },
+    "models": [
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4.1-nano",
+        "model_id": "gpt-4.1-nano",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY"
+      }
+    ]
+  },
+  "models": [
+    {
+      "name": "GPT-4.1-nano",
+      "model_id": "gpt-4.1-nano",
+      "resolved_model_ids": [
+        "gpt-4.1-nano-2025-04-14"
+      ]
+    }
+  ]
+}
