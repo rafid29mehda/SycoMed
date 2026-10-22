@@ -7,6 +7,10 @@ dataset:
   source: sample          # sample | medqa | jsonl
   n: 200                  # how many questions to sample (ignored for tiny sample set)
   seed: 42                # fixes the random sample for reproducibility
+  annotations: ""        # optional: data/annotations/<set>.jsonl from `python -m data.annotate`;
+                          # gives tempting wrong options and the P6 reasoned claim
+  skip: 0                 # drop the first `skip` shuffled questions. Develop on a small
+                          # dev set (skip 0, n 100); report on a held-out set (skip 100)
   jsonl_path: ""          # used only when source == jsonl
 
 pressures:                # which pressure types to run (see prompts/pressures.py)
@@ -21,6 +25,15 @@ run:
   out_jsonl: outputs/raw_responses.jsonl
   out_csv: outputs/scorecard.csv
   fresh: true             # if true, delete old raw_responses.jsonl before running
+  structures: [followup]  # followup = answer then challenged; add preemptive for the
+                          # "claim stated up front" comparison (docs/PROTOCOL.md, H2)
+  baseline_samples: 3     # unpressured answers per question; only questions answered the
+                          # same way (all right / all wrong) on every sample enter an arm
+  resume: false           # true (or --resume): keep finished questions, redo failed ones
+  workers: 1              # questions processed at once per model (OpenAI: 8 is fine;
+                          # keep 1 on free Gemini/Groq tiers)
+  strict_parse: true      # only a "FINAL ANSWER: X" line counts; guessing a letter from
+                          # prose/truncated replies fabricated flips in live runs
 
 # ---- Models ----
 # Local models need Ollama running and the model pulled (ollama pull <id>).
@@ -43,14 +56,38 @@ models:
   #   name: "BioMistral 7B"
   #   model_id: "cniongolo/biomistral"   # check the exact Ollama tag
   #
-  # - provider: openai_compat   # free Gemini tier
-  #   name: "Gemini Flash"
-  #   model_id: "gemini-2.0-flash"
-  #   base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
-  #   api_key_env: "GEMINI_API_KEY"
+  # Mitigation conditions (H4): add `system_variant: evidence_first` (or
+  # `resolve_first`) to any model, and put the condition in its name in square
+  # brackets, e.g. name: "GPT-4o-mini [evidence_first]". The report pairs it with
+  # the same model's default run.
   #
-  # - provider: openai_compat   # cheap OpenAI
+  # Hosted models (verified working Oct 2026). Keys come from .env.
+  # Failed calls (rate limits etc.) are logged as errors and excluded from the
+  # scores -- check baseline_errors / pressure_errors in scorecard.csv.
+  #
+  # - provider: openai_compat
   #   name: "GPT-4o-mini"
   #   model_id: "gpt-4o-mini"
   #   base_url: "https://api.openai.com/v1"
   #   api_key_env: "OPENAI_API_KEY"
+  #
+  # - provider: openai_compat   # GPT-5 family: reasoning tokens count against
+  #   name: "GPT-5-mini"        # max_tokens, so give it room. The adapter handles
+  #   model_id: "gpt-5-mini"    # max_completion_tokens / no-temperature itself.
+  #   base_url: "https://api.openai.com/v1"
+  #   api_key_env: "OPENAI_API_KEY"
+  #   max_tokens: 2048
+  #   extra_params: {reasoning_effort: minimal}
+  #
+  # - provider: openai_compat   # free Gemini tier (rate limited; raise run.sleep)
+  #   name: "Gemini 3.5 Flash-Lite"
+  #   model_id: "gemini-3.5-flash-lite"
+  #   base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  #   api_key_env: "GEMINI_API_KEY"
+  #
+  # - provider: openai_compat   # free Groq tier: ~1000 requests/day, 1000 output
+  #   name: "GPT-OSS 20B (Groq)" # tokens/min, so keep max_tokens <= 1000
+  #   model_id: "openai/gpt-oss-20b"
+  #   base_url: "https://api.groq.com/openai/v1"
+  #   api_key_env: "GROQ_API_KEY"
+  #   max_tokens: 1000

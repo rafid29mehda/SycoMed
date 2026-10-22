@@ -10,3 +10,10 @@ outputs/raw_responses.jsonl
 outputs/scorecard.csv
 outputs/questions_used.jsonl
 .venv/
+guide/
+# Per-run raw replies and logs are large; release them as a dataset instead.
+outputs/*/raw_responses.jsonl
+outputs/*/run.log
+# Early exploratory runs made before the v2 protocol.
+outputs/hosted_v0/
+outputs/hosted_v1/

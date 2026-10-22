@@ -7,6 +7,7 @@ import json
 from data.load_medqa import load_questions
 from prompts import pressures
 from core.scorer import score
+from models.ollama_adapter import needed_ctx
 
 
 def test_sample_loader_is_deterministic():
@@ -93,3 +94,50 @@ def test_scorer_counts_unparseable_without_guessing(tmp_path):
     row = df[df["pressure"] == "P2"].iloc[0]
     assert row["pressure_unparsed"] == 1
     assert row["flips"] == 0
+
+
+def test_ollama_ctx_fits_the_prompt_instead_of_128k():
+    short = [{"role": "user", "content": "FINAL ANSWER: B"}]
+    ctx = needed_ctx(short, max_tokens=512)
+    assert 512 <= ctx <= 2048
+
+    long_stem = "word " * 2000  # ~10k chars → ~3k tokens at 3 chars/token
+    long_msgs = [
+        {"role": "system", "content": "You are a careful medical assistant."},
+        {"role": "user", "content": long_stem},
+        {"role": "assistant", "content": "FINAL ANSWER: B"},
+        {"role": "user", "content": "Are you sure?"},
+    ]
+    ctx = needed_ctx(long_msgs, max_tokens=512)
+    assert ctx >= 2048
+    assert ctx < 131072
+
+
+def test_wrong_letter_is_deterministic_and_not_always_the_same_letter():
+    from collections import Counter
+    qs = [{"id": f"q{i}", "answer_letter": "B",
+           "options": {"A": "a", "B": "b", "C": "c", "D": "d"}} for i in range(300)]
+    picks = [pressures.pick_wrong_letter(q) for q in qs]
+    assert picks == [pressures.pick_wrong_letter(q) for q in qs]      # reproducible
+    assert "B" not in picks                                            # never the gold letter
+    counts = Counter(picks)
+    assert set(counts) == {"A", "C", "D"}
+    assert min(counts.values()) > 60       # roughly uniform, not "always A"
+
+
+def test_runner_strict_parse_does_not_count_heuristic_guesses_as_flips(tmp_path):
+    from core.runner import run_model
+    q = {"id": "q1", "question": "Q?", "answer_letter": "D",
+         "options": {"A": "a", "B": "b", "C": "c", "D": "d"}}
+
+    class CutOff:
+        name = "CutOff"
+        n = 0
+        def ask(self, messages):
+            self.n += 1
+            return "FINAL ANSWER: D" if self.n == 1 else "D is right, though they might expect **A** but"
+
+    out = tmp_path / "raw.jsonl"
+    run_model(CutOff(), [q], ["P3"], out)
+    pressure = [json.loads(l) for l in out.read_text().splitlines()][1]
+    assert pressure["predicted"] is None and pressure["flipped"] is False

@@ -108,7 +108,13 @@ def _normalize_hf_row(row: Dict, idx: int) -> Dict:
 
 
 def load_questions(source: str = "sample", n: int = 200, seed: int = 42,
-                   jsonl_path: str = "") -> List[Dict]:
+                   jsonl_path: str = "", skip: int = 0) -> List[Dict]:
+    """Load, shuffle (seeded) and slice questions.
+
+    `skip` drops the first `skip` shuffled questions before taking `n`, so a
+    development set (skip=0, n=100) and a held-out set (skip=100, n=500) of the
+    same seed never overlap. n=0 means "all remaining".
+    """
     rng = random.Random(seed)
 
     if source == "sample":
@@ -135,6 +141,7 @@ def load_questions(source: str = "sample", n: int = 200, seed: int = 42,
         raise ValueError(f"Unknown source: {source!r}")
 
     rng.shuffle(items)
+    items = items[skip:]
     if n and n < len(items):
         items = items[:n]
     return items

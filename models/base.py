@@ -22,38 +22,95 @@ register it in `get_adapter`. Nothing else in the codebase changes.
 
 from __future__ import annotations
 import os
+import re
 import time
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import requests
 
 # HTTP status codes that are worth retrying (rate limits + transient 5xx).
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
+# If a server asks us to wait longer than this, the quota is effectively
+# exhausted (e.g. a daily limit); fail fast instead of hanging the run.
+MAX_WAIT_SECONDS = 120.0
+
+_DURATION_PART = re.compile(r"(\d+(?:\.\d+)?)(ms|h|m|s)")
+_UNIT_SECONDS = {"ms": 0.001, "s": 1.0, "m": 60.0, "h": 3600.0}
+
+
+def parse_duration(value: str) -> Optional[float]:
+    """Parse '7', '1.5s', '577ms' or '1h20m38.4s' into seconds (None if unparseable)."""
+    value = (value or "").strip()
+    if not value:
+        return None
+    try:
+        return float(value)
+    except ValueError:
+        pass
+    parts = _DURATION_PART.findall(value)
+    if not parts or "".join(n + u for n, u in parts) != value:
+        return None
+    return sum(float(n) * _UNIT_SECONDS[u] for n, u in parts)
+
+
+def _server_wait(resp) -> Optional[float]:
+    """How long the server says to wait before retrying, if it says."""
+    headers = {k.lower(): v for k, v in (resp.headers or {}).items()}
+    waits = []
+    if "retry-after" in headers:
+        waits.append(parse_duration(headers["retry-after"]))
+    else:
+        # Groq-style: the quota that is exhausted is the one that resets last.
+        for key in ("x-ratelimit-reset-requests", "x-ratelimit-reset-tokens"):
+            if key in headers:
+                waits.append(parse_duration(headers[key]))
+    waits = [w for w in waits if w is not None]
+    return max(waits) if waits else None
+
+
+def _http_error(resp) -> requests.HTTPError:
+    """An HTTPError whose message carries the API's own explanation."""
+    body = (getattr(resp, "text", "") or "").strip().replace("\n", " ")
+    msg = f"{resp.status_code} {getattr(resp, 'reason', '')}".strip()
+    if body:
+        msg += f": {body[:300]}"
+    return requests.HTTPError(msg, response=resp)
+
 
 def post_with_retries(url, *, headers=None, json=None, timeout=120,
-                      max_retries: int = 3, backoff: float = 2.0):
-    """POST a JSON request with simple exponential backoff.
+                      max_retries: int = 6, backoff: float = 2.0):
+    """POST a JSON request, retrying transient failures.
 
     Retries on connection errors, timeouts, and transient HTTP responses
-    (429 / 5xx). Non-transient errors (e.g. 400, 401, 404) are raised at once.
-    If every attempt fails the last error is raised, so the run loop in
-    core/runner.py can log it and move on rather than crashing the whole run.
+    (429 / 5xx). When the server sends Retry-After (or Groq-style rate-limit
+    reset headers) we wait that long; otherwise we back off exponentially. If the
+    server asks for more than MAX_WAIT_SECONDS we give up at once. Non-transient
+    errors (400, 401, 404, ...) are raised immediately, with the response body
+    in the message. If every attempt fails the last error is raised, so the run
+    loop in core/runner.py can log it and move on instead of crashing the run.
     """
     last_err = None
     for attempt in range(max_retries):
+        wait = backoff ** attempt
         try:
             resp = requests.post(url, headers=headers, json=json, timeout=timeout)
         except (requests.ConnectionError, requests.Timeout) as e:
             last_err = e
         else:
             if resp.status_code not in RETRYABLE_STATUS:
-                resp.raise_for_status()  # raises on non-retryable 4xx, else returns
+                if resp.status_code >= 400:
+                    raise _http_error(resp)
                 return resp
-            last_err = requests.HTTPError(f"{resp.status_code} {resp.reason}", response=resp)
+            last_err = _http_error(resp)
+            server = _server_wait(resp)
+            if server is not None:
+                if server > MAX_WAIT_SECONDS:
+                    raise last_err
+                wait = server
         if attempt < max_retries - 1:
-            time.sleep(backoff ** attempt)
+            time.sleep(wait)
     raise last_err
 
 
@@ -94,7 +151,11 @@ def get_adapter(cfg: Dict) -> ModelAdapter:
     )
 
     if provider == "ollama":
-        return OllamaAdapter(host=cfg.get("host", "http://localhost:11434"), **common)
+        return OllamaAdapter(
+            host=cfg.get("host", "http://localhost:11434"),
+            num_ctx=cfg.get("num_ctx"),
+            **common,
+        )
 
     if provider == "openai_compat":
         api_key_env = cfg.get("api_key_env", "OPENAI_API_KEY")
@@ -102,6 +163,7 @@ def get_adapter(cfg: Dict) -> ModelAdapter:
         return OpenAICompatAdapter(
             base_url=cfg["base_url"],
             api_key=api_key,
+            extra_params=cfg.get("extra_params"),
             **common,
         )
 

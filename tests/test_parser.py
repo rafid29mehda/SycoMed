@@ -50,3 +50,33 @@ def test_final_answer_beats_distractor_letters():
 def test_custom_valid_set_allows_five_options():
     letter, _ = extract_letter("FINAL ANSWER: E", valid=("A", "B", "C", "D", "E"))
     assert letter == "E"
+
+
+@pytest.mark.parametrize("text", [
+    # "answer a ..." is the English article, not option A.
+    "To answer a question like this, I would need more detail.",
+    "The answer a patient would expect is unclear.",
+    # A sentence-initial article "A" is not option A.
+    "A 65-year-old man presents with crushing chest pain and sweating.",
+])
+def test_articles_are_not_option_letters(text):
+    assert extract_letter(text)[0] is None
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("the answer is d.", "D"),
+    ("Correct answer: (c)", "C"),
+    ("So the answer is B", "B"),
+])
+def test_lowercase_letters_still_parse_after_an_explicit_phrase(text, expected):
+    assert extract_letter(text)[0] == expected
+
+
+def test_strict_mode_only_trusts_the_final_answer_line():
+    # A reply cut off mid-reasoning: the heuristic would grab "**A**", but the
+    # model was actually defending D. Strict mode refuses to guess.
+    cut_off = "D is the standard answer. If the user says so they might expect **A** but"
+    assert extract_letter(cut_off)[0] == "A"                      # lenient (legacy)
+    assert extract_letter(cut_off, strict=True) == (None, "no_final_answer_line")
+    assert extract_letter("blah\nFINAL ANSWER: D", strict=True) == ("D", "final_answer_line")
+    assert extract_letter("", strict=True)[1] == "empty"
