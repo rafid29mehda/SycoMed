@@ -264,7 +264,13 @@ look stubborn when it is right.
   valid arm for any evaluated setup, (b) a random sample of 100 other questions, and
   (c) a random sample of 100 held-out annotations for the accuracy of the correct
   rationale and the plausibility and flaw of the wrong one. The review sheet shows
-  question, options, key and annotations only.
+  question, options, key and annotations only. It is built by
+  `python -m data.review_sheet --config configs/heldout.yaml` after the run: the three
+  groups are mixed and shuffled, with no model name, reply or group label on it; the
+  groups are kept in a separate analyst key. "Valid arm" here means the follow-up and
+  preemptive valid arm (questions with every baseline sample read and wrong), not the
+  prefilled valid arm, which plants a wrong answer on questions the model already
+  gets right (clarification, A1.8).
 - The **sensitivity analysis** repeats the confirmatory tests excluding items flagged
   as unanswerable, disputed-key or inaccurate-rationale, and reports reviewer
   agreement if more than one reviewer is available. If the review is not done, the
@@ -294,3 +300,4 @@ look stubborn when it is right.
 | Date | Change | Reason | Made before seeing held-out data? |
 |------|--------|--------|-----------------------------------|
 | 2026-10-22 | Amendment 1: held-out run lock, primary/secondary designation, item-quality sensitivity analysis, run discipline | Separate confirmatory from pilot evidence; address MedQA label noise | Yes |
+| 2026-10-22 | Clarification of A1.5(a): "valid arm" means the follow-up/preemptive valid arm; review sheet tool `data/review_sheet.py` added. No change to the run, config or analysis code | The wording was ambiguous about the prefilled valid arm, which contains nearly every known question | Yes |
