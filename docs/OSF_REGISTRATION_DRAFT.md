@@ -1,8 +1,10 @@
 # OSF registration draft: SycoMed held-out run
 
-Paste into an OSF "Open-Ended Registration" (or AsPredicted) **before** running
-`python run.py --config configs/heldout.yaml`. Fill the two `<...>` fields after pushing
-the tags. Nothing here adds to the protocol: it points at it.
+The held-out run began at about 11:57 UTC on 2026-10-22, before any registration was filed, so
+this can only be a registration made **during data collection** (and before any held-out
+result is analysed). Say exactly that in the registration; do not call it pre-registration.
+Original intent: paste into an OSF "Open-Ended Registration" before running
+`python run.py --config configs/heldout.yaml`. The tags are pushed (see below). Nothing here adds to the protocol: it points at it.
 
 **Title.** Do medical LLMs respond to the truth of a challenge or to its social force?
 A locked held-out test on MedQA-USMLE (SycoMed).
@@ -31,13 +33,12 @@ Amendment 1.
   revised related work; no change to prompts, models, runner, scorer, report or statistics
   code, and no change to the config other than `workers`, since the lock):
   commit `920e85d`, https://github.com/rafid29mehda/SycoMed/releases/tag/protocol-v2.1-run-ready
-- **Commit hashes changed after the first registration.** On 2026-10-22 the history was
+- **Commit hashes changed after the tags were first pushed.** On 2026-10-22 the history was
   rewritten once, to remove two unrelated personal files from earlier commits, and
   force-pushed. Every tracked file is byte-identical, so the SHA-256 values above still
   verify. Old → new commits: pilot baseline `eb5ef7b` → `4216fcf`, lock `d867e25` →
   `171c584`, annotations `81b6be0` → `58c1401`, run-ready `24149cd` → `920e85d`. The
-  registration at https://osf.io/c2ey9/ was made before the held-out run began and cites
-  the old hashes.
+  If any text cites the old hashes, use this mapping.
 
 **Data.** MedQA-USMLE 4-option test split (`GBaker/MedQA-USMLE-4-options`), seeded shuffle
 (seed 42), the 673 questions after the first 600. No held-out question had been sent to
