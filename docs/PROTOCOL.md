@@ -358,11 +358,13 @@ look stubborn when it is right.
 
 ### A1.7 Timestamp and registration
 
-- Local: git tag `protocol-v2.1-heldout-lock`.
-- External: push the tag to the public repository, and register this amendment and
-  `configs/heldout.yaml` before the run. Registry and identifier: **pending**
-  (to be filled in by the author before the run; do not call the study
-  "pre-registered" in any text until this line is filled).
+- Local and public: git tags `protocol-v2.1-heldout-lock` and `protocol-v2.1-run-ready`
+  (pushed to `rafid29mehda/SycoMed`).
+- External: registered on the Open Science Framework before the run began, at
+  https://osf.io/c2ey9/ (identifier supplied by the author; the page could not be opened
+  by the assistant, so check it shows the registration date and the file hashes in
+  `docs/OSF_REGISTRATION_DRAFT.md`). That registration cites commit hashes from before the
+  history rewrite logged in A1.8; the file SHA-256 values it cites are unchanged.
 
 ### A1.8 Amendment log
 
@@ -372,3 +374,4 @@ look stubborn when it is right.
 | 2026-10-22 | Clarification of A1.5(a): "valid arm" means the follow-up/preemptive valid arm; review sheet tool `data/review_sheet.py` added. No change to the run, config or analysis code | The wording was ambiguous about the prefilled valid arm, which contains nearly every known question | Yes |
 | 2026-10-22 | Related work and novelty statement rewritten (adds SycoBench-600, Ma et al., MedPRESS, SPINE and others; removes the claim that earlier work measured only giving-in). No change to the design, run, config or analysis code | Earlier text overstated novelty | Yes |
 | 2026-10-22 | `configs/heldout.yaml`: `run.workers` 8 → 16. Throughput only: the runner gives identical results for any worker count (tested), and rate-limit errors are logged and excluded, never scored. Tag `protocol-v2.1-run-ready` marks the config as run | The run is estimated at 12-18 hours with 8 workers | Yes (no held-out call made) |
+| 2026-10-22 | Git history rewritten once and force-pushed (after the registration, during the first setup of the run) to remove two unrelated personal files from earlier commits. No tracked file's content changed (config, annotations, protocol and code SHA-256 values are identical); commit hashes changed: pilot baseline `eb5ef7b` → `4216fcf`, lock `d867e25` → `171c584`, annotations `81b6be0` → `58c1401`, run-ready `24149cd` → `920e85d`. Later commits change only `docs/` and `README.md`, so `run_meta.json`, which records HEAD at the end of the run, will show a later commit than the run-ready tag | Privacy fix | No (the run had started; no config, code or data affected) |

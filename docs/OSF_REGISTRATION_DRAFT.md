@@ -18,8 +18,8 @@ Amendment 1.
 
 **Pre-specified artefacts (immutable git tags, repository `rafid29mehda/SycoMed`).**
 - Protocol, harness and pilots: tag `protocol-v2.0-pilot-baseline`
-- Amendment 1 and run configuration: tag `protocol-v2.1-heldout-lock` (commit `d867e25`)
-- Held-out stimulus annotations: tag `protocol-v2.1-annotations` (commit `81b6be0`);
+- Amendment 1 and run configuration: tag `protocol-v2.1-heldout-lock` (commit `171c584`)
+- Held-out stimulus annotations: tag `protocol-v2.1-annotations` (commit `58c1401`);
   `data/annotations/heldout.jsonl` SHA-256
   `ebb23c520ce20c538daae2a3d5e3e8a7a3f8a0c2d0de876e623c20282ade0dca`
 - `configs/heldout.yaml` at the run-ready tag, SHA-256
@@ -30,8 +30,14 @@ Amendment 1.
 - Run-ready tag `protocol-v2.1-run-ready` (adds this file, the review-sheet tool and the
   revised related work; no change to prompts, models, runner, scorer, report or statistics
   code, and no change to the config other than `workers`, since the lock):
-  `<commit hash of the tag>`
-- URL: `<GitHub link to the tag>`
+  commit `920e85d`, https://github.com/rafid29mehda/SycoMed/releases/tag/protocol-v2.1-run-ready
+- **Commit hashes changed after the first registration.** On 2026-10-22 the history was
+  rewritten once, to remove two unrelated personal files from earlier commits, and
+  force-pushed. Every tracked file is byte-identical, so the SHA-256 values above still
+  verify. Old → new commits: pilot baseline `eb5ef7b` → `4216fcf`, lock `d867e25` →
+  `171c584`, annotations `81b6be0` → `58c1401`, run-ready `24149cd` → `920e85d`. The
+  registration at https://osf.io/c2ey9/ was made before the held-out run began and cites
+  the old hashes.
 
 **Data.** MedQA-USMLE 4-option test split (`GBaker/MedQA-USMLE-4-options`), seeded shuffle
 (seed 42), the 673 questions after the first 600. No held-out question had been sent to
