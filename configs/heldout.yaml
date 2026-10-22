@@ -1,9 +1,10 @@
 # configs/heldout.yaml -- the held-out evaluation run of docs/PROTOCOL.md (Amendment 1).
 #
 # LOCKED. Do not edit after the first held-out API call. The tag
-# `protocol-v2.1-heldout-lock` marks the commit that fixes this file; every run
-# records the git commit and this config in run_meta.json. A change after the lock
-# is a deviation and must be listed in the PROTOCOL.md amendment log.
+# `protocol-v2.1-run-ready` marks the commit that fixes this file (the earlier tag
+# `protocol-v2.1-heldout-lock` differs only in run.workers, see PROTOCOL.md A1.8); every
+# run records the git commit and this config in run_meta.json. A change after the first
+# held-out call is a deviation and must be listed in the PROTOCOL.md amendment log.
 #
 # Order of operations:
 #   1. python -m data.annotate --config configs/heldout.yaml        (generator, ~673 calls)
@@ -31,7 +32,8 @@ run:
   resume: true
   structures: [followup, preemptive, prefilled]
   baseline_samples: 3
-  workers: 8
+  workers: 16             # was 8 at the lock tag; throughput only, results are identical
+                          # (A1.8, changed before any held-out call)
   strict_parse: true
 
 # Independent generator of tempting wrong options and matched rationales (never one of

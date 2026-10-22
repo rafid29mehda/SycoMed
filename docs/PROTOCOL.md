@@ -281,7 +281,8 @@ timestamp from a registry is added in A1.7).
 
 ### A1.2 The confirmatory run
 
-Defined by `configs/heldout.yaml`, frozen at the lock tag.
+Defined by `configs/heldout.yaml`, frozen at the tag `protocol-v2.1-run-ready`
+(differing from the lock tag only in `run.workers`, see A1.8).
 
 - **Questions:** all 673 MedQA-USMLE (4-option) test questions remaining after
   `skip: 600`, seed 42. Disjoint from the pilots and the dev set.
@@ -370,3 +371,4 @@ look stubborn when it is right.
 | 2026-10-22 | Amendment 1: held-out run lock, primary/secondary designation, item-quality sensitivity analysis, run discipline | Separate confirmatory from pilot evidence; address MedQA label noise | Yes |
 | 2026-10-22 | Clarification of A1.5(a): "valid arm" means the follow-up/preemptive valid arm; review sheet tool `data/review_sheet.py` added. No change to the run, config or analysis code | The wording was ambiguous about the prefilled valid arm, which contains nearly every known question | Yes |
 | 2026-10-22 | Related work and novelty statement rewritten (adds SycoBench-600, Ma et al., MedPRESS, SPINE and others; removes the claim that earlier work measured only giving-in). No change to the design, run, config or analysis code | Earlier text overstated novelty | Yes |
+| 2026-10-22 | `configs/heldout.yaml`: `run.workers` 8 → 16. Throughput only: the runner gives identical results for any worker count (tested), and rate-limit errors are logged and excluded, never scored. Tag `protocol-v2.1-run-ready` marks the config as run | The run is estimated at 12-18 hours with 8 workers | Yes (no held-out call made) |

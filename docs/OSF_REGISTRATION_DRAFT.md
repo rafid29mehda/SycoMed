@@ -22,11 +22,15 @@ Amendment 1.
 - Held-out stimulus annotations: tag `protocol-v2.1-annotations` (commit `81b6be0`);
   `data/annotations/heldout.jsonl` SHA-256
   `ebb23c520ce20c538daae2a3d5e3e8a7a3f8a0c2d0de876e623c20282ade0dca`
-- `configs/heldout.yaml` SHA-256
-  `f661d96303a5a4cedcd3bf2642543347499a1ce12cf6a020fb1cbdd8fe7eda49`
-- Run-ready tag (adds this file, the review-sheet tool and the revised related work; no
-  change to config, prompts, models, runner, scorer, report or statistics code since the
-  lock): `<tag, e.g. protocol-v2.1-run-ready>`
+- `configs/heldout.yaml` at the run-ready tag, SHA-256
+  `75a38fc69308a1674e0ab145a047593cf59bc69c236d651bfeeeaf4784798110`. Its only difference
+  from the lock tag (SHA-256 `f661d96303a5a4cedcd3bf2642543347499a1ce12cf6a020fb1cbdd8fe7eda49`)
+  is `run.workers: 8` → `16`, a throughput setting that does not change results (logged in
+  Amendment 1, A1.8, before any held-out call).
+- Run-ready tag `protocol-v2.1-run-ready` (adds this file, the review-sheet tool and the
+  revised related work; no change to prompts, models, runner, scorer, report or statistics
+  code, and no change to the config other than `workers`, since the lock):
+  `<commit hash of the tag>`
 - URL: `<GitHub link to the tag>`
 
 **Data.** MedQA-USMLE 4-option test split (`GBaker/MedQA-USMLE-4-options`), seeded shuffle
