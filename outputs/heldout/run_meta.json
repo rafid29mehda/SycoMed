@@ -1,0 +1,205 @@
+{
+  "started_utc": "2026-10-23T04:45:32+00:00",
+  "python": "3.13.2",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "packages": {
+    "requests": "2.34.2",
+    "pandas": "3.0.6",
+    "pyyaml": "6.0.3",
+    "datasets": "5.0.1",
+    "matplotlib": "3.11.2"
+  },
+  "git": {
+    "commit": "8ebda3649fe5f7e88e07af9dd12e1511a4ef4f2f",
+    "dirty": true
+  },
+  "dataset": {
+    "source": "medqa",
+    "n": 0,
+    "seed": 42,
+    "skip": 600,
+    "annotations": "data/annotations/heldout.jsonl",
+    "n_questions": 673,
+    "question_ids_sha256": "d76a7a23a9e4165e83d3467091a733d2ef5b1ae247adb6e278636eb47af86c8e",
+    "annotations_sha256": "ebb23c520ce20c538daae2a3d5e3e8a7a3f8a0c2d0de876e623c20282ade0dca"
+  },
+  "config": {
+    "dataset": {
+      "source": "medqa",
+      "n": 0,
+      "seed": 42,
+      "skip": 600,
+      "annotations": "data/annotations/heldout.jsonl"
+    },
+    "pressures": [
+      "P0",
+      "P1",
+      "P2",
+      "P3",
+      "P5",
+      "P6"
+    ],
+    "run": {
+      "sleep": 0.0,
+      "out_jsonl": "outputs/heldout/raw_responses.jsonl",
+      "out_csv": "outputs/heldout/scorecard.csv",
+      "fresh": false,
+      "resume": true,
+      "structures": [
+        "followup",
+        "preemptive",
+        "prefilled"
+      ],
+      "baseline_samples": 3,
+      "workers": 16,
+      "strict_parse": true
+    },
+    "annotate": {
+      "provider": "openai_compat",
+      "name": "annotator (gpt-5-mini)",
+      "model_id": "gpt-5-mini",
+      "base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "max_tokens": 4096,
+      "workers": 8
+    },
+    "models": [
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4.1-nano",
+        "model_id": "gpt-4.1-nano",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4.1-nano [evidence_first]",
+        "model_id": "gpt-4.1-nano",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "system_variant": "evidence_first"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4.1-nano [resolve_first]",
+        "model_id": "gpt-4.1-nano",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "system_variant": "resolve_first"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4o-mini",
+        "model_id": "gpt-4o-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4o-mini [evidence_first]",
+        "model_id": "gpt-4o-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "system_variant": "evidence_first"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-4o-mini [resolve_first]",
+        "model_id": "gpt-4o-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "system_variant": "resolve_first"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-5-mini",
+        "model_id": "gpt-5-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "max_tokens": 2048,
+        "extra_params": {
+          "reasoning_effort": "minimal"
+        }
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-5-mini [evidence_first]",
+        "model_id": "gpt-5-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "max_tokens": 2048,
+        "extra_params": {
+          "reasoning_effort": "minimal"
+        },
+        "system_variant": "evidence_first"
+      },
+      {
+        "provider": "openai_compat",
+        "name": "GPT-5-mini [resolve_first]",
+        "model_id": "gpt-5-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "max_tokens": 2048,
+        "extra_params": {
+          "reasoning_effort": "minimal"
+        },
+        "system_variant": "resolve_first"
+      }
+    ]
+  },
+  "models": [
+    {
+      "name": "GPT-4.1-nano",
+      "model_id": "gpt-4.1-nano",
+      "resolved_model_ids": []
+    },
+    {
+      "name": "GPT-4.1-nano [evidence_first]",
+      "model_id": "gpt-4.1-nano",
+      "resolved_model_ids": []
+    },
+    {
+      "name": "GPT-4.1-nano [resolve_first]",
+      "model_id": "gpt-4.1-nano",
+      "resolved_model_ids": []
+    },
+    {
+      "name": "GPT-4o-mini",
+      "model_id": "gpt-4o-mini",
+      "resolved_model_ids": []
+    },
+    {
+      "name": "GPT-4o-mini [evidence_first]",
+      "model_id": "gpt-4o-mini",
+      "resolved_model_ids": []
+    },
+    {
+      "name": "GPT-4o-mini [resolve_first]",
+      "model_id": "gpt-4o-mini",
+      "resolved_model_ids": [
+        "gpt-4o-mini-2024-07-18"
+      ]
+    },
+    {
+      "name": "GPT-5-mini",
+      "model_id": "gpt-5-mini",
+      "resolved_model_ids": [
+        "gpt-5-mini-2025-08-07"
+      ]
+    },
+    {
+      "name": "GPT-5-mini [evidence_first]",
+      "model_id": "gpt-5-mini",
+      "resolved_model_ids": [
+        "gpt-5-mini-2025-08-07"
+      ]
+    },
+    {
+      "name": "GPT-5-mini [resolve_first]",
+      "model_id": "gpt-5-mini",
+      "resolved_model_ids": [
+        "gpt-5-mini-2025-08-07"
+      ]
+    }
+  ]
+}
